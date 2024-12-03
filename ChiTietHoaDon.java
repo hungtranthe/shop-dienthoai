@@ -56,11 +56,11 @@ class ChiTietHoaDon extends HoaDonCoSo {
     @Override
     public String toString() {
         return"ChiTietHoaDon{" +
-                "Mã hóa đơn='" + maHD + '\'' +
-                ",Mã điện thoại='" + maSP + '\'' +
-                ", Số lượng bán =" + soLuongBan +
-                ", Đơn giá bán=" + donGiaBan +
-                ", Thành tiền=" + getThanhTien() +
+                "Ma hoa don ='" + maHD + '\'' +
+                ",Ma dien thoai ='" + maSP + '\'' +
+                ", So luong ban ='" + soLuongBan +
+                ", don gia ban ='" + donGiaBan +
+                ", Thanh tien ='" + getThanhTien() +
                 '}';
     }
 }

@@ -12,7 +12,7 @@ public class DSHoaDon{
     private DSNV dsnv;
     private DSKH dskh;
     private int soHoaDon;
-
+    String tenFile = "HoaDon.txt";
     public DSHoaDon(int maxHoaDon,String tenFile){
         this.dshd = new HoaDon[maxHoaDon];
         this.dsnv = new DSNV(maxHoaDon, tenFile);
@@ -22,25 +22,29 @@ public class DSHoaDon{
     }
     // Đọc file hóa đơn
     public void docFileHoaDon(String tenfile){
-        try {
-            BufferedReader dfile = new BufferedReader(new FileReader("hoadon.dat"));
+        try (BufferedReader dfile = new BufferedReader(new FileReader(tenfile))){
             String line;
             while ((line = dfile.readLine()) != null){
                 String[] data = line.split(";");
-                if(data.length >= 5){
-                    String maHD = data[0];
-                    Date ngayNhapHD = new SimpleDateFormat("yyyy-MM-dd").parse(data[1]);
-                    String maNV = data[2];
-                    String maKH = data[3];
-                    double tongTien = Double.parseDouble(data[4]);
-
-                    KhachHang kh = dskh.timKhachHangTheoMa(maKH);
-                    NhanVien nv = dsnv.timNhanVienTheoMa(maNV);
-                    HoaDon hoaDon = new HoaDon(maHD, ngayNhapHD, nv, kh, tongTien);
-                    System.out.println(line);
-                } else {
-                    System.out.println("Du lieu khong hop le.");
+                if(data.length < 5){
+                    System.out.println("Du lieu khong hop le: " + line);
+                    continue;
                 }
+                String maHD = data[0];
+                Date ngayNhapHD = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy").parse(data[1]);
+                String maNV = data[2];
+                String maKH = data[3];
+                double tongTien = Double.parseDouble(data[4]);
+                NhanVien nv = dsnv.timNhanVienTheoMa(maNV);
+                if(nv == null){
+                    System.out.println("Ma nhan vien khong ton tai: " + maNV);
+                    continue;
+                }
+                
+                HoaDon hoaDon = new HoaDon(maHD, ngayNhapHD, nv, maKH, tongTien);
+                dshd[soHoaDon++] = hoaDon; 
+                System.out.println("Đã thêm hóa đơn: " + hoaDon.toString());
+                
             }
             System.out.println("Da doc du lieu thanh cong.");
             dfile.close();
@@ -50,9 +54,8 @@ public class DSHoaDon{
     }
     //Lưu hóa đơn vào file
     public void luuFileHoaDon(String tenFile){
-        try {
-            BufferedWriter wfile = new BufferedWriter(new FileWriter(tenFile));
-            String line;
+        try  (BufferedWriter wfile = new BufferedWriter(new FileWriter(tenFile))){
+           
             for (int i = 0; i < soHoaDon; i++) {
                 if(dshd[i] != null){
                     String line1 = dshd[i].getMaHD() + ";" +
@@ -90,20 +93,35 @@ public class DSHoaDon{
             
             System.out.println("Nhap ma hoa don: ");
             String maHD = scanner.nextLine();
+
             String ngayNhapStr = scanner.nextLine();
             Date ngayNhapHD = new Date();
+
             System.out.println("Nhap ma nhan vien: ");
             String maNV = scanner.nextLine();
             NhanVien nv = dsnv.timNhanVienTheoMa(maNV);
+
             System.out.println("Nhap ma khach hang: ");
             String maKH = scanner.nextLine();
-            KhachHang kh = dskh.timKhachHangTheoMa(maKH);
 
-            HoaDon hoaDon = new HoaDon(maHD, new Date(), nv, kh, soHoaDon);
-            dshd[soHoaDon] = hoaDon;
-            soHoaDon++;
+            
+            themHoaDon(maHD, ngayNhapHD, nv, maKH, soHoaDon);
+            System.out.println("Da them hoa don thanh cong.");
+            luuFileHoaDon("HoaDon.txt");
         } else {
             System.out.println("Khong the them hoa don, da dat toi da");
+        }
+    }
+
+    public void themHoaDon(String maHD, Date ngayNhapHD, NhanVien nv, String maKH, double tongTien) {
+        if (soHoaDon < dshd.length) {
+            HoaDon hoaDon = new HoaDon(maHD, ngayNhapHD, nv, maKH, tongTien);
+            dshd[soHoaDon] = hoaDon;
+            soHoaDon++;
+            System.out.println("Hoa don da duoc them: " + hoaDon.toString());
+            luuFileHoaDon(tenFile); // Lưu vào file
+        } else {
+            System.out.println("Khong the them hoa don, da dat toi da.");
         }
     }
     // Sửa hóa đơn
@@ -120,6 +138,7 @@ public class DSHoaDon{
                 dshd[i].setMaNV();
                 dshd[i].setMaKH();
                 System.out.println("Hóa đơn đã được cập nhật.");
+                luuFileHoaDon("HoaDon.txt");
                 return;
             }
             System.out.println("Khong the tim thay hoa don co ma: "+ maHD);
@@ -167,6 +186,7 @@ public class DSHoaDon{
                 dshd[soHoaDon-1] = null;
                 soHoaDon--;
                 System.out.println("Hoa don co ma : " + maHD + "da duoc xoa");
+                luuFileHoaDon("HoaDon.txt");
                 return;
             }
         }
@@ -183,14 +203,6 @@ public class DSHoaDon{
                 System.out.println("Ma khach hang: " + dshd[i].getMaKH());
                 System.out.println("Tong tien: " + dshd[i].getTongTien());
                 System.out.println("=============================================");
-
-                System.out.println("---------- CHI TIET HOA DON ----------");
-                ChiTietHoaDon[] chiTietList = dshd[i].getDSChiTietHoaDon();
-                for (int j = 0; j < chiTietList.length; j++) {
-                    if (chiTietList[j] != null) {
-                        System.out.println(chiTietList[j].toString());
-                    }
-                }
             }
         }
         System.out.println("Khong tim thay hoa don co ma: " + maHD);

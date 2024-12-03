@@ -51,6 +51,9 @@ public class KhachHang {
         return soDienThoai;
     }
 
+    public void setMaKhachHang(String maKhachHang) {
+        this.maKhachHang = maKhachHang;
+    }
     public void setTenKhachHang(String tenKhachHang) {
         this.tenKhachHang = tenKhachHang;
     }

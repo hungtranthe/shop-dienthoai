@@ -9,7 +9,7 @@ public class DSChiTietHoaDon {
     private DSDT dsdt;
     private ChiTietHoaDon[] dscthd;
     private int soChiTiet;
-
+    String tenFile = "DSChiTietHoaDon.txt";
     public DSChiTietHoaDon(DSDT dsdt,int maxChiTiet,String tenFile){
         this.dsdt = dsdt;
         dscthd = new ChiTietHoaDon[maxChiTiet];
@@ -27,23 +27,28 @@ public class DSChiTietHoaDon {
     }
 
     public void docFileChiTietHoaDon(String tenFile){
-        try {
-            BufferedReader dfile= new BufferedReader(new FileReader(tenFile));
+        try (BufferedReader dfile= new BufferedReader(new FileReader("DSChiTietHoaDon.txt"))){
+            
             String line;
             while((line = dfile.readLine()) != null){
-                String data[] = line.split(",");
-                if(data.length >= 4){
-                    String maHD = data[0];
+                String data[] = line.split(";");
+                if(data.length < 4){
+                    System.out.println("Du lieu khong hop le: " + line);
+                    continue;
+                }
+                String maHD = data[0];
                     String maSP = data[1];
                     int soLuongBan = Integer.parseInt(data[2]);
                     double donGiaBan = Double.parseDouble(data[3]);
                     
                     DienThoai dienThoai = timKiemSPTheoMaSP(maSP);
-                    if(dienThoai != null){
-                        return;
+                    if(dienThoai == null){
+                        System.out.println("Ma dien thoai khong ton tai: " + maSP);
+                        continue;
                     }
-                    ChiTietHoaDon chiTiet = new ChiTietHoaDon(maHD, maSP, soLuongBan, dienThoai);
-                }
+                    
+                    themChiTiet(maHD, maSP, soLuongBan, dienThoai);
+                    System.out.println("Da them chi tiet hoa don vao.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,16 +56,21 @@ public class DSChiTietHoaDon {
     }
 
     public void luuFileChiTietHoaDon(String tenFile){
-        try {
-            BufferedWriter wfile = new BufferedWriter(new FileWriter(tenFile));
+        try (BufferedWriter wfile = new BufferedWriter(new FileWriter(tenFile))){ 
             for (int i = 0; i < soChiTiet; i++) {
                 if(dscthd[i] != null){
-                    wfile.write(dscthd[i].toString());
+                    String line = dscthd[i].getMaHD() + ";" +
+                                  dscthd[i].getMaSP() + ";" +
+                                  dscthd[i].getSoLuongBan() + ";" +
+                                  dscthd[i].getDonGiaBan() + ";" +
+                                  dscthd[i].getThanhTien();
+                    wfile.write(line);
                     wfile.newLine();
                 }
             }
             System.out.println("Du lieu da duoc luu vao file");
         } catch (Exception e) {
+            System.out.println("Loi khi luu du lieu: " + e.getMessage());
         }
     }
 
@@ -72,21 +82,31 @@ public class DSChiTietHoaDon {
 
             DienThoai dienThoai = timKiemSPTheoMaSP(maSP);
             if(dienThoai != null){
+                System.out.println("Nhap so luong ban: ");
+                int soLuongBan = scanner.nextInt();
+                double donGiaBan = dienThoai.getGia();
+           
+                themChiTiet(maHD, maSP, soLuongBan, dienThoai);
+                
+                System.out.println("Chi tiet hoa don da duoc them: ");
+                luuFileChiTietHoaDon("DSChiTietHoaDon.txt");
+                return;
+            } else {
                 System.out.println("Khong tim thay dien thoai co ma: " + maSP);
                 return;
             }
-            
-            System.out.println("Nhap so luong ban: ");
-            int soLuongBan = scanner.nextInt();
-            double donGiaBan = dienThoai.getGia();
-            
-           
-            ChiTietHoaDon chiTiet =  new ChiTietHoaDon(maHD, maSP, soLuongBan, dienThoai);
+        }
+    }
+
+    public void themChiTiet(String maHD, String maSP, int soLuongBan, DienThoai dienThoai) {
+        if (soChiTiet < dscthd.length) {
+            ChiTietHoaDon chiTiet = new ChiTietHoaDon(maHD, maSP, soLuongBan, dienThoai);
             dscthd[soChiTiet] = chiTiet;
             soChiTiet++;
-
-            System.out.println("Chi tiet hoa don da duoc them: ");
-            System.out.println(chiTiet);
+            System.out.println("Chi tiet hoa don da duoc them: " + chiTiet.toString());
+            luuFileChiTietHoaDon(tenFile); // Lưu vào file
+        } else {
+            System.out.println("Khong the them chi tiet hoa don, da dat toi da.");
         }
     }
 
@@ -103,7 +123,7 @@ public class DSChiTietHoaDon {
 
     public ChiTietHoaDon timKiemHoaDonChiTietTheoMaSP(String maSP){
         for (int i = 0; i < soChiTiet; i++) {
-            if(dscthd[i] != null && dscthd[i].getMaHD().equals(maSP)){
+            if(dscthd[i] != null && dscthd[i].getMaSP().equals(maSP)){
                 System.out.println("Chi tiet hoa don tim thay: " + dscthd[i].toString());
                 return dscthd[i];
             }
@@ -114,16 +134,23 @@ public class DSChiTietHoaDon {
 
     public void suaChiTietHoaDon(String maHD){
         for (int i = 0; i < soChiTiet; i++) {
-            if(dscthd[i].getMaHD().equals(maHD)){
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Nhap ma san pham moi: ");
-                String maSP = scanner.nextLine();
+            if(dscthd[i] != null && dscthd[i].getMaHD().equals(maHD)){
+                Scanner scanner = new Scanner(System.in);         
+                System.out.println("Nhap ma dien thoai moi: ");
+                String maSPMoi = scanner.nextLine();
+                DienThoai dienThoai = timKiemSPTheoMaSP(maSPMoi);
+                
                 System.out.println("Nhap so luong ban moi: ");
                 int soLuongBan = scanner.nextInt();
-
-                DienThoai dienThoai = timKiemSPTheoMaSP(maSP);
-                dscthd[i] = new ChiTietHoaDon(maHD, maSP, soLuongBan, dienThoai);
+                if (dienThoai != null) {
+                    dscthd[i].setMaSP(dienThoai.getId()); // Chỉ thay đổi sản phẩm liên kết
+                    dscthd[i].setSoLuongBan(soLuongBan);
+                    dscthd[i].setDonGiaBan(dienThoai.getGia());
+                }
+                
+                dscthd[i] = new ChiTietHoaDon(maHD, maSPMoi, soLuongBan, dienThoai);
                 System.out.println("Sua chi tiet hoa don thanh cong!");
+                luuFileChiTietHoaDon("DSChiTietHoaDon.txt");
             } else{
                 System.out.println("Khong tim thay chi tiet hoa don voi ma: " + maHD);
             }
@@ -133,12 +160,13 @@ public class DSChiTietHoaDon {
     public void xoaChiTietHoaDon(String maHD){
         for (int i = 0; i < soChiTiet; i++) {
             if(dscthd[i].getMaHD().equals(maHD)){
-                for (int j = 0; j < soChiTiet - 1; j++) {
+                for (int j = i; j < soChiTiet - 1; j++) {
                     dscthd[j] =  dscthd[j+1];
                 }
                 dscthd[soChiTiet-1]= null;
                 soChiTiet--;
                 System.out.println("Xoa hoa don thanh cong!");
+                luuFileChiTietHoaDon("DSChiTietHoaDon.txt");
                 return;
             }
         }
@@ -150,11 +178,26 @@ public class DSChiTietHoaDon {
             System.out.println("Khong co chi tiet hoa don nao trong danh sach.");
             return;
         }
-        System.out.println("--------------------DANH SACH CHI TIET HOA DON--------------------");
+        System.out.println("======================DANH SACH CHI TIET HOA DON=======================");
         for (int i = 0; i < soChiTiet; i++) {
             if(dscthd[i] != null){
                 System.out.println(dscthd[i].toString());
             }
         }
     }
+
+    public void xuatChiTietHoaDon (String maHD){
+        for (int i = 0; i < soChiTiet; i++){
+            if(dscthd[i] != null && dscthd[i].getMaHD().equals(maHD)){
+                System.out.println("===========Chi TIet Hoa Don===========");
+                System.out.println("Ma hoa don: " + dscthd[i].getMaHD());
+                System.out.println("Ma san pham: " + dscthd[i].getMaSP());
+                System.out.println("So luong: " + dscthd[i].getSoLuongBan());
+                System.out.println("Thanh tien: " + dscthd[i].getThanhTien());
+                System.out.println("======================================");
+            }
+        }
+        System.out.println("Khong tim thay ma hoa don: " + maHD);
+    }
+    
 }

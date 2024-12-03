@@ -5,7 +5,7 @@ public class QLHD{
     private DSHoaDon dshd;
     private DSDT dsdt;
     public QLHD(int maxHoaDon){
-        this.dshd = new DSHoaDon(maxHoaDon,"hoadon.dat");
+        this.dshd = new DSHoaDon(maxHoaDon,"HoaDon.txt");
     }
 
     public void getDshd(DSHoaDon dshd){
@@ -13,7 +13,6 @@ public class QLHD{
     }
     public void menu(){
         Scanner scanner = new Scanner(System.in);
-        dshd.docFileHoaDon("hoadon.dat");
         int ch;
         do { 
             System.out.println("===========Quan Ly Hoa Don=========");
@@ -23,8 +22,6 @@ public class QLHD{
             System.out.println("4.Sua hoa don");
             System.out.println("5.Xoa hoa don");
             System.out.println("6.Xuat hoa don");
-            System.out.println("7.Doc file hoa don");
-            System.out.println("8.Luu danh sach hoa don vao file");
             System.out.println("0.Quay lai menu chinh");
             System.out.println("====================================");
             ch = scanner.nextInt();
@@ -83,11 +80,7 @@ public class QLHD{
                     String xuatHD = scanner.nextLine();
                     dshd.xuatHoaDon(xuatHD);
                     break;
-                case 7:
-                    dshd.docFileHoaDon("hoadon.dat");
-                    break;
-                case 8:
-                    dshd.luuFileHoaDon("hoadon.dat");
+                case 0:
                     break;
                 default:
                     System.out.println("Lua chon khong hop le");
