@@ -5,7 +5,7 @@ public class QLCTHD {
     private DSChiTietHoaDon dscthd;
     
     public QLCTHD(DSDT dsdt,int maxChiTiet){
-        this.dscthd = new DSChiTietHoaDon(dsdt, maxChiTiet, "cthd.dat");
+        this.dscthd = new DSChiTietHoaDon(dsdt, maxChiTiet,"DSChiTietHoaDon.txt");
     }
 
     public void menu(){
@@ -18,25 +18,24 @@ public class QLCTHD {
             System.out.println("3.Xoa chi tiet hoa don theo tuy chon");
             System.out.println("4.Tim kiem chi tiet hoa don tuy chon");
             System.out.println("5.Hien thi danh sach chi tiet hoa don ");
-            System.out.println("6.Luu chi tiet hoa don vao file ");
-            System.out.println("7.Doc file chi tiet hoa don ");
+            System.out.println("6.Xuat chi tiet hoa don");
             System.out.println("0.Quay lai");
             System.out.println("==================================================");
             ch = scanner.nextInt();
             scanner.nextLine();
             switch (ch) {
                 case 1:
-                    System.out.println("Nhap ma hoa don: ");
+                    System.out.println("Nhap ma hoa don can tim de them: ");
                     String maHD = scanner.nextLine();
                     dscthd.themChiTietHoaDon(maHD);
                     break;
                 case 2:
-                    System.out.println("Nhap ma hoa don: ");
+                    System.out.println("Nhap ma hoa don can tim can sua: ");
                     String maHDSua = scanner.nextLine();
                     dscthd.suaChiTietHoaDon(maHDSua);
                     break;
                 case 3:
-                    System.out.print("Nhap ma hoa don de xoa: ");
+                    System.out.print("Nhap ma hoa don can tim de xoa: ");
                     String maHDXoa = scanner.nextLine();
                     dscthd.xoaChiTietHoaDon(maHDXoa);
                     break;
@@ -68,10 +67,11 @@ public class QLCTHD {
                     dscthd.hienThiDanhSachChiTietHoaDon();
                     break;
                 case 6:
-                    dscthd.luuFileChiTietHoaDon("DSChiTietHoaDon.txt");
+                    System.out.print("Nhap ma hoa don can tim de xuat: ");
+                    String maHDXuat = scanner.nextLine();
+                    dscthd.xuatChiTietHoaDon(maHDXuat);
                     break;
-                case 7:
-                    dscthd.docFileChiTietHoaDon("DSChiTietHoaDon.txt");
+                case 0:
                     break;
                 default:
                     System.out.println("Lua chon khong hop le. Vui long chon lai.");

@@ -21,7 +21,7 @@ class HoaDon extends HoaDonCoSo {
     private ChiTietHoaDon[] cthd;
     
     // Constructor
-    public HoaDon(String maHD, Date ngaynhapHD, NhanVien maNV, KhachHang maKH, double tongTien) {
+    public HoaDon(String maHD, Date ngaynhapHD, NhanVien maNV, String maKH, double tongTien) {
         super(maHD);
         this.ngayNhapHD = ngaynhapHD;
         if (maNV != null) {
@@ -29,11 +29,8 @@ class HoaDon extends HoaDonCoSo {
         } else {
             throw new IllegalArgumentException("Nhan vien khong duoc null");
         }
-        if (maKH != null) {
-            this.maKH = maKH.getMaKhachHang();
-        } else {
-            throw new IllegalArgumentException("Khach hang khong duoc null");
-        }
+        
+        this.maKH = maKH;
         this.tongTien = tongTien;
     }
 

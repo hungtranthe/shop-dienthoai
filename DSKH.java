@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -8,11 +9,14 @@ import java.util.Scanner;
 public class DSKH {
     private KhachHang[] danhSachKhachHang;
     private int soLuongKhachHang;
-
+    
+    private String tenFile ="KhachHang.txt"; //vi tri luu du lieu
+    
     public DSKH(int maxKhachHang, String tenfile) {
         this.danhSachKhachHang = new KhachHang[maxKhachHang];
         this.soLuongKhachHang = 0;
-        docDuLieu(tenfile);
+        
+        docDuLieu(tenFile);
     }
 
     // Menu quản lý khách hàng
@@ -25,7 +29,8 @@ public class DSKH {
             System.out.println("2. Hien thi danh sach khach hang");
             System.out.println("3. Tim khach hang theo ma");
             System.out.println("4. Sua thong tin khach hang");
-            System.out.println("5. Thoat");
+            System.out.println("5. Xoa khach Hang theo ma");
+            System.out.println("6. Thoat");
             System.out.print("Nhap lua chon cua ban: ");
             choice = Integer.parseInt(scanner.nextLine());
 
@@ -41,7 +46,11 @@ public class DSKH {
                     break;
                 case 4: 
                     suaThongTinKhachHang(scanner);
-                case 5:
+                    break;
+                case 5: 
+                	xoaKhachHang(scanner);
+                	break;
+                case 6:
                     System.out.println("Quay lai menu chinh.");
                     return;
                 default:
@@ -50,12 +59,33 @@ public class DSKH {
         } while (choice != 5);
 
     }
+    
+    public void xoaKhachHang(Scanner scanner) {
+        System.out.print("Nhập mã khách hàng cần xóa: ");
+        String ma = scanner.nextLine();
+        boolean kt = false;
+        
+        for (int i = 0; i < danhSachKhachHang.length; i++) {
+            if (danhSachKhachHang[i] != null && danhSachKhachHang[i].getMaKhachHang().equals(ma)) {
+                danhSachKhachHang[i].setMaKhachHang( "X"+ma);
+                kt = true;
+                luuDuLieu(tenFile);
+                System.out.println("Khách hàng với mã " + ma + " đã được đánh dấu là xóa.");
+                break; // Thoát khỏi vòng lặp sau khi tìm thấy và đánh dấu khách hàng
+            }
+        }
+        if (!kt) {
+            System.out.println("Không tìm thấy khách hàng với mã " + ma);
+            menu();
+        }
+    }
 
     // Thêm khách hàng mới
     public void themKhachHangMoi(Scanner scanner) {
-        System.out.print("Nhap ma khach hang: ");
-        String maKhachHang = scanner.nextLine();
-
+       
+        int x= soLuongKhachHang+1;
+        String maKhachHang = "KH"+x;
+        System.out.print("Ma khach hang moi: "+maKhachHang);
         System.out.print("Nhap ten khach hang: ");
         String tenKhachHang = scanner.nextLine();
 
@@ -67,35 +97,37 @@ public class DSKH {
 
         KhachHang khachHang = new KhachHang(maKhachHang, tenKhachHang, soDienThoai, diaChi);
         themKhachHang(khachHang);
-    }
+    }	
 
     // Thêm khách hàng vào danh sách
     public void themKhachHang(KhachHang khachHang) {
-        if (timKhachHangTheoMa(khachHang.getMaKhachHang()) != null) {
-            System.out.println("Khach hang da ton tai voi ma: " + khachHang.getMaKhachHang());
-            return;
-        }
-        if (soLuongKhachHang < danhSachKhachHang.length) {
-            danhSachKhachHang[soLuongKhachHang++] = khachHang;
-            System.out.println("Them khach hang: " + khachHang.getTenKhachHang());
-        } else {
-            System.out.println("Danh sach khach hang da day.");
-        }
-        luuDuLieu("D:\\OOP\\kh.dat"); // Lưu lại danh sách sau khi thêm
+    	danhSachKhachHang[soLuongKhachHang++] = khachHang;
+        System.out.println("Them khach hang: " + khachHang.getTenKhachHang());
+
+//        if (soLuongKhachHang < danhSachKhachHang.length) {
+//            danhSachKhachHang[soLuongKhachHang++] = khachHang;
+//            System.out.println("Them khach hang: " + khachHang.getTenKhachHang());
+//        } else {
+//            System.out.println("Danh sach khach hang da day.");
+//        }
+        luuDuLieu(tenFile); // Lưu lại danh sách sau khi thêm
     }
 
     // Hiển thị danh sách khách hàng
     public void hienThiDanhSachKhachHang() {
             for (int i = 0; i < soLuongKhachHang; i++) {
+            	
                 KhachHang kh = danhSachKhachHang[i];
+                if (kh.getMaKhachHang().charAt(0)!='X') {
                 System.out.println("Ma khach hang: " + kh.getMaKhachHang());
                 System.out.println("Ten khach hang: " + kh.getTenKhachHang());
                 System.out.println("So dien thoai: " + kh.getSoDienThoai());
                 System.out.println("Dia chi: " + kh.getDiaChi());
                 System.out.println("Ma hoa don da mua: " + String.join(", ", kh.getDanhSachHoaDon()));
                 System.out.println("-------------------------------");
+            
+                }
             }
-        
     }
 
     // Tìm kiếm khách hàng theo mã
@@ -118,7 +150,8 @@ public class DSKH {
 
     // Tìm khách hàng theo mã
     public KhachHang timKhachHangTheoMa(String maKhachHang) {
-        for (KhachHang kh : danhSachKhachHang) {
+        for (int i=0; i<soLuongKhachHang;i++) {
+        	KhachHang kh=danhSachKhachHang[i];
             if (kh != null && kh.getMaKhachHang().equals(maKhachHang)) {
                 return kh;
             }
@@ -166,46 +199,47 @@ public class DSKH {
     }
 
     // Sửa thông tin khách hàng
-public void suaThongTinKhachHang(Scanner scanner) {
-    System.out.print("Nhap ma khach hang can sua: ");
-    String maKhachHang = scanner.nextLine();
-
-    // Tìm khách hàng theo mã
-    KhachHang khachHang = timKhachHangTheoMa(maKhachHang);
-    if (khachHang == null) {
-        System.out.println("Khong tim thay khach hang voi ma: " + maKhachHang);
-        return;
-    }
-
-    // Hiển thị thông tin hiện tại
-    System.out.println("Thong tin hien tai cua khach hang:");
-    System.out.println("Ma khach hang: " + khachHang.getMaKhachHang());
-    System.out.println("Ten khach hang: " + khachHang.getTenKhachHang());
-    System.out.println("So dien thoai: " + khachHang.getSoDienThoai());
-    System.out.println("Dia chi: " + khachHang.getDiaChi());
-
-    // Nhập thông tin mới
-    System.out.print("Nhap ten khach hang moi (nhap de giu nguyen): ");
-    String tenKhachHangMoi = scanner.nextLine();
-    if (!tenKhachHangMoi.isEmpty()) {
-        khachHang.setTenKhachHang(tenKhachHangMoi);
-    }
-
-    System.out.print("Nhap so dien thoai moi (nhap de giu nguyen): ");
-    String soDienThoaiMoi = scanner.nextLine();
-    if (!soDienThoaiMoi.isEmpty()) {
-        khachHang.setSoDienThoai(soDienThoaiMoi);
-    }
-
-    System.out.print("Nhap dia chi moi (nhap de giu nguyen): ");
-    String diaChiMoi = scanner.nextLine();
-    if (!diaChiMoi.isEmpty()) {
-        khachHang.setDiaChi(diaChiMoi);
-    }
-
-    System.out.println("Thong tin khach hang da duoc cap nhat.");
-    luuDuLieu("D:\\OOP\\kh.dat"); // Ghi lại vào file
-}
+	public void suaThongTinKhachHang(Scanner scanner) {
+	    System.out.print("Nhap ma khach hang can sua: ");
+	    String maKhachHang = scanner.nextLine();
+	
+	    // Tìm khách hàng theo mã
+	    KhachHang khachHang = timKhachHangTheoMa(maKhachHang);
+	    if (khachHang == null) {
+	        System.out.println("Khong tim thay khach hang voi ma: " + maKhachHang);
+	        menu();
+	    }
+	
+	    // Hiển thị thông tin hiện tại
+	    System.out.println("Thong tin hien tai cua khach hang:");
+	    System.out.println("Ma khach hang: " + khachHang.getMaKhachHang());
+	    System.out.println("Ten khach hang: " + khachHang.getTenKhachHang());
+	    System.out.println("So dien thoai: " + khachHang.getSoDienThoai());
+	    System.out.println("Dia chi: " + khachHang.getDiaChi());
+	
+	    // Nhập thông tin mới
+	    System.out.print("Nhap ten khach hang moi (nhap de giu nguyen): ");
+	    String tenKhachHangMoi = scanner.nextLine();
+	    if (!tenKhachHangMoi.isEmpty()) {
+	        khachHang.setTenKhachHang(tenKhachHangMoi);
+	    }
+	
+	    System.out.print("Nhap so dien thoai moi (nhap de giu nguyen): ");
+	    String soDienThoaiMoi = scanner.nextLine();
+	    if (!soDienThoaiMoi.isEmpty()) {
+	        khachHang.setSoDienThoai(soDienThoaiMoi);
+	    }
+	
+	    System.out.print("Nhap dia chi moi (nhap de giu nguyen): ");
+	    String diaChiMoi = scanner.nextLine();
+	    if (!diaChiMoi.isEmpty()) {
+	        khachHang.setDiaChi(diaChiMoi);
+	    }
+	
+	    System.out.println("Thong tin khach hang da duoc cap nhat.");
+	    luuDuLieu(tenFile); // Lưu lại danh sách
+	    menu();
+	}
 
     
 

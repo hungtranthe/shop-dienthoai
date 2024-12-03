@@ -1,0 +1,10 @@
+KH001;Nguyen Van Khanh;0909123456;123 Le Loi;
+KH002;Tran Thi Binh;0909345678;45 Tran Hung Dao;
+KH003;Le Van Chien;0909789123;78 Hai Ba Trung;
+KH004;Pham Thi Dung;0909678123;101 Nguyen Trai;
+KH005;Hoang Van Em;0909456789;56 Bach Dang;
+KH006;Vu Thi Phan;0909123987;33 Ly Thuong Kiet;
+KH007;Nguyen Van Gian;0909786543;88 Dong Khoi;
+KH008;Tran Thi Huyen;0909234567;120 Le Duan;
+KH009;Pham Van Kim;0909456123;67 Phan Chu Trinh;
+KH010;Le Thi Khanh;0909321987;99 Pasteur;

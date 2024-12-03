@@ -22,24 +22,29 @@ public class QLSP {
             luaChon = scanner.nextInt();
             scanner.nextLine();  // Đọc dòng dư thừa sau khi nhập số
 
-            switch (luaChon) {
-                case 1 -> dsdt.hienThiDanhSach();
-                case 2 -> dsdt.nhapthongtin(scanner);
-                case 3 -> dsdt.timKiemNangCao(scanner);
-                case 4 -> dsdt.xoaDienThoai(scanner);
-                case 5 -> dsdt.capNhatDienThoai();
-                case 6 -> {
+            switch (luaChon = 0) {
+                case 1:
+                 dsdt.hienThiDanhSach();
+                 break;
+                case 2:
+                 dsdt.nhapthongtin(scanner);
+                 break;
+                case 3: 
+                dsdt.timKiemNangCao(scanner);
+                break;
+                case 4:
+                 dsdt.xoaDienThoai(scanner);
+                 break;
+                case 5:
+                 dsdt.capNhatDienThoai();
+                 break;
+                case 6:
                     System.out.println("Quay lai menu chinh...");
                     return; // Thoát khỏi menu quản lý sản phẩm để quay lại menu chính
-                }
-                /*case 7 ->{ 
-                    String Thongtincanlay =scanner.nextLine();
-                    String masanpham = scanner.nextLine();
 
-                    Object kq = dsdt.timThongTintheoMasp(masanpham, Thongtincanlay);
-                    System.out.print(kq);
-                }*/
-                default -> System.out.println("Lua chon khong hop le. Vui long thu lai!");
+
+                default:
+                 System.out.println("Lua chon khong hop le. Vui long thu lai!");
             }
         } while (luaChon != 6);
     }
